@@ -11,7 +11,7 @@ df['fakeKey'] = 1
 compareDf = df.merge(df, on='fakeKey',suffixes=["_1", "_2"]).reset_index(drop=True).drop('fakeKey', axis=1)
 pairwiseDf = compareDf[compareDf['networkCanvasAlterID_1'] != compareDf['networkCanvasAlterID_2']]
 
-# Calculate probability (using Levenshtein distance for now)
+# Calculate probability (using Jaro_winkler distance for now)
 pairwiseDf["prob"] = pairwiseDf.apply(lambda x: lv.jaro_winkler(x["fullName_1"], x["fullName_2"]), axis=1)
 
 # Output edgelist w/ probability
