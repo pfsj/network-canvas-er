@@ -1,24 +1,22 @@
 import pandas as pd
 import numpy as np
-import Levenshtein as lv
 import sys
+import recordlinkage
 
-df  =  pd.read_csv("EntityResolution_attributeList.csv", delimiter=',')
-df["fullName"] = df["First Name"] + " " + df["Last Name"]
+df  =  pd.read_csv("EntityResolution_attributeList.csv", delimiter=',',index_col='networkCanvasAlterID')
 
 # Merge dataframe to itself to get pairwise comparisons
-df['fakeKey'] = 1
-compareDf = df.merge(df, on='fakeKey',suffixes=["_1", "_2"]).reset_index(drop=True).drop('fakeKey', axis=1)
-pairwiseDf = compareDf[compareDf['networkCanvasAlterID_1'] != compareDf['networkCanvasAlterID_2']].copy()
+indexer = recordlinkage.Index()
+indexer.full()
+index_list = indexer.index(df)
+comp_pairs = recordlinkage.Compare()
+comp_pairs.string('First Name', 'First Name', method='jarowinkler',label='fnJwDist')
+comp_pairs.string('Last Name', 'Last Name', method='jarowinkler',label='lnJwDist')
+comp_pairs.string('First Name', 'First Name', method='levenshtein',label='fnLevenDist')
+comp_pairs.string('Last Name', 'Last Name', method='levenshtein',label='lnLevenDist')
+pairwise = comp_pairs.compute(index_list, df)
 
-# Remove inverse rows
-pairwiseDf['rowSort']  = pairwiseDf[['networkCanvasAlterID_1','networkCanvasAlterID_2']].apply(np.sort, axis = 1)
-pairwiseDf['rowSort'] = pairwiseDf['rowSort'].astype(str)
-pairwiseUnique = pairwiseDf.copy()
-pairwiseUnique.drop_duplicates(subset=['rowSort'], inplace=True)
-
-# Calculate probability (using Jaro_winkler distance for now)
-pairwiseUnique["prob"] = pairwiseUnique.apply(lambda x: lv.jaro_winkler(x["fullName_1"], x["fullName_2"]), axis=1)
+pairwise["prob"] = features.mean(axis=1)
 
 # Output edgelist w/ probability
-pairwiseUnique[['networkCanvasAlterID_1','networkCanvasAlterID_2','prob']].to_csv(sys.stdout)
+pairwise[['prob']].to_csv(sys.stdout,index=True)
