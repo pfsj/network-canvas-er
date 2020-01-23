@@ -16,7 +16,7 @@ comp_pairs.string('First Name', 'First Name', method='levenshtein',label='fnLeve
 comp_pairs.string('Last Name', 'Last Name', method='levenshtein',label='lnLevenDist')
 pairwise = comp_pairs.compute(index_list, df)
 
-pairwise["prob"] = features.mean(axis=1)
+pairwise["prob"] = pairwise.mean(axis=1)
 
 # Output edgelist w/ probability
 pairwise[['prob']].to_csv(sys.stdout,index=True)
