@@ -2,9 +2,16 @@ import pandas as pd
 import numpy as np
 import sys
 import recordlinkage
+import time
 
 # Currently reads in
-df  =  pd.read_csv("EntityResolution_attributeList.csv", delimiter=',',index_col='networkCanvasAlterID')
+# df  =  pd.read_csv("EntityResolution_attributeList.csv", delimiter=',',index_col='networkCanvasAlterID')
+
+df = pd.read_csv(sys.stdin, delimiter=',')
+
+# Remove duplicate ids
+df.drop_duplicates('networkCanvasAlterID', keep = False, inplace = True)
+df.set_index("networkCanvasAlterID", inplace = True)
 
 # Merge dataframe to itself to get pairwise comparisons
 indexer = recordlinkage.Index()
@@ -37,4 +44,9 @@ else:
     print(algorithmError)
 
 # Output edgelist w/ probability
-pairwise[['prob']].to_csv(sys.stdout,index=True)
+foo = pairwise[['prob']].to_csv(index=True)
+
+# spoof slow streamed response
+for line in foo.splitlines():
+  print(line, flush=True)
+  time.sleep(0.5)
