@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-import sys
+import sys, os, time
 import recordlinkage
-import time
 
-# Currently reads in
-# df  =  pd.read_csv("EntityResolution_attributeList.csv", delimiter=',',index_col='networkCanvasAlterID')
+# script_path = os.path.dirname(__file__)
+# csv_path = os.path.join(script_path, "EntityResolution_attributeList.csv")
+# df  =  pd.read_csv(csv_path, delimiter=',',index_col='networkCanvasAlterID')
 
 df = pd.read_csv(sys.stdin, delimiter=',')
 
@@ -13,15 +13,21 @@ df = pd.read_csv(sys.stdin, delimiter=',')
 df.drop_duplicates('networkCanvasAlterID', keep = False, inplace = True)
 df.set_index("networkCanvasAlterID", inplace = True)
 
+# time.sleep(10)
+
 # Merge dataframe to itself to get pairwise comparisons
 indexer = recordlinkage.Index()
 indexer.full()
 index_list = indexer.index(df)
 comp_pairs = recordlinkage.Compare()
-comp_pairs.string('First Name', 'First Name', method='jarowinkler',label='fnJwDist')
-comp_pairs.string('Last Name', 'Last Name', method='jarowinkler',label='lnJwDist')
-comp_pairs.string('First Name', 'First Name', method='levenshtein',label='fnLevenDist')
-comp_pairs.string('Last Name', 'Last Name', method='levenshtein',label='lnLevenDist')
+comp_pairs.string('name', 'name', method='jarowinkler',label='fnJwDist')
+comp_pairs.string('last_name', 'last_name', method='jarowinkler',label='lnJwDist')
+comp_pairs.string('name', 'name', method='levenshtein',label='fnLevenDist')
+comp_pairs.string('last_name', 'last_name', method='levenshtein',label='lnLevenDist')
+# comp_pairs.string('First name', 'First name', method='jarowinkler',label='fnJwDist')
+# comp_pairs.string('Last name', 'Last name', method='jarowinkler',label='lnJwDist')
+# comp_pairs.string('First name', 'First name', method='levenshtein',label='fnLevenDist')
+# comp_pairs.string('Last name', 'Last name', method='levenshtein',label='lnLevenDist')
 pairwise = comp_pairs.compute(index_list, df)
 
 erAlgorithm = "simple"
@@ -49,4 +55,4 @@ foo = pairwise[['prob']].to_csv(index=True)
 # spoof slow streamed response
 for line in foo.splitlines():
   print(line, flush=True)
-  time.sleep(0.5)
+  # time.sleep(2)
