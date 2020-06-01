@@ -14,5 +14,5 @@ get_script_dir () {
 }
 
 # uncomment the next line if you are using virtualenv
-# source $(get_script_dir)/env/bin/activate
-python3 $(get_script_dir)/EntityResolution.py
+source $(get_script_dir)/env/bin/activate
+python3 $(get_script_dir)/EntityResolution.py $@

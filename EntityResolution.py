@@ -1,7 +1,13 @@
 import pandas as pd
 import numpy as np
 import sys, os, time
+import argparse
+import random
 import recordlinkage
+
+parser = argparse.ArgumentParser("Entity resolver")
+parser.add_argument('--minimumThreshold', type=float, default=0.9, help='Ignore matches lower than this threshold')
+args = parser.parse_args()
 
 # script_path = os.path.dirname(__file__)
 # csv_path = os.path.join(script_path, "EntityResolution_attributeList.csv")
@@ -53,6 +59,12 @@ else:
 foo = pairwise[['prob']].to_csv(index=True)
 
 # spoof slow streamed response
-for line in foo.splitlines():
-  print(line, flush=True)
-  # time.sleep(2)
+for index, line in enumerate(foo.splitlines()):
+    if index == 0:
+        print(line, flush=True)
+        continue
+
+    line_parts = line.split(",")
+    prob = float(line_parts[2])
+    if (prob > args.minimumThreshold):
+        print(line, flush=True)
