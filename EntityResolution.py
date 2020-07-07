@@ -6,7 +6,7 @@ import random
 import recordlinkage
 
 parser = argparse.ArgumentParser("Entity resolver")
-parser.add_argument('--minimumThreshold', type=float, default=0.9, help='Ignore matches lower than this threshold')
+parser.add_argument('--minimumThreshold', type=float, required=False, default=0.5, help='Ignore matches lower than this threshold')
 args = parser.parse_args()
 
 # script_path = os.path.dirname(__file__)
@@ -60,6 +60,7 @@ foo = pairwise[['prob']].to_csv(index=True)
 
 # spoof slow streamed response
 for index, line in enumerate(foo.splitlines()):
+    time.sleep(0.05)
     if index == 0:
         print(line, flush=True)
         continue
