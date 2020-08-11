@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pandas as pd
 import numpy as np
 import sys, os, time
@@ -21,19 +22,18 @@ df.set_index("networkCanvasAlterID", inplace = True)
 
 # time.sleep(10)
 
+name_field = '6be95f85-c2d9-4daf-9de1-3939418af888'
+surname_field = '0ff25001-a2b8-46de-82a9-53143aa00d10'
+
 # Merge dataframe to itself to get pairwise comparisons
 indexer = recordlinkage.Index()
 indexer.full()
 index_list = indexer.index(df)
 comp_pairs = recordlinkage.Compare()
-comp_pairs.string('name', 'name', method='jarowinkler',label='fnJwDist')
-comp_pairs.string('last_name', 'last_name', method='jarowinkler',label='lnJwDist')
-comp_pairs.string('name', 'name', method='levenshtein',label='fnLevenDist')
-comp_pairs.string('last_name', 'last_name', method='levenshtein',label='lnLevenDist')
-# comp_pairs.string('First name', 'First name', method='jarowinkler',label='fnJwDist')
-# comp_pairs.string('Last name', 'Last name', method='jarowinkler',label='lnJwDist')
-# comp_pairs.string('First name', 'First name', method='levenshtein',label='fnLevenDist')
-# comp_pairs.string('Last name', 'Last name', method='levenshtein',label='lnLevenDist')
+comp_pairs.string(name_field, name_field, method='jarowinkler',label='fnJwDist')
+comp_pairs.string(surname_field, surname_field, method='jarowinkler',label='lnJwDist')
+comp_pairs.string(name_field, name_field, method='levenshtein',label='fnLevenDist')
+comp_pairs.string(surname_field, surname_field, method='levenshtein',label='lnLevenDist')
 pairwise = comp_pairs.compute(index_list, df)
 
 erAlgorithm = "simple"

@@ -3,6 +3,10 @@ import sys, os, time
 import argparse
 import random
 
+parser = argparse.ArgumentParser("Random resolver")
+parser.add_argument('--minimumThreshold', type=float, required=False, default=0.999, help='Ignore matches lower than this threshold')
+args = parser.parse_args()
+
 lines = []
 
 for line in sys.stdin:
@@ -13,7 +17,7 @@ for line in sys.stdin:
 count = 0
 
 for index, line in enumerate(lines):
-  time.sleep(0.05)
+  # time.sleep(0.05)
   if index == 0:
     print("networkCanvasAlterID_1, networkCanvasAlterID_2, prob, count", flush=True)
     continue
@@ -29,6 +33,5 @@ for index, line in enumerate(lines):
     prob = float(random.random()) # randomly assign pairs a probability
     count += 1
 
-    if prob > 0.75:
-      # if (args.minimumThreshold and prob > args.minimumThreshold):
+    if (args.minimumThreshold and prob > args.minimumThreshold):
       print(f'{line_parts[0].rstrip()}, {line_parts2[0].rstrip()}, {prob}, {count}', flush=True)
