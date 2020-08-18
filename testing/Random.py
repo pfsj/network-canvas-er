@@ -17,7 +17,6 @@ for line in sys.stdin:
 count = 0
 
 for index, line in enumerate(lines):
-  # time.sleep(0.05)
   if index == 0:
     print("networkCanvasAlterID_1, networkCanvasAlterID_2, prob, count", flush=True)
     continue
@@ -35,3 +34,6 @@ for index, line in enumerate(lines):
 
     if (args.minimumThreshold and prob > args.minimumThreshold):
       print(f'{line_parts[0].rstrip()}, {line_parts2[0].rstrip()}, {prob}, {count}', flush=True)
+      # add an artificial delay
+      # time.sleep(1)
+
