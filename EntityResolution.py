@@ -6,6 +6,11 @@ import argparse
 import random
 import recordlinkage
 
+
+name_field = '6be95f85-c2d9-4daf-9de1-3939418af888'
+surname_field = '0ff25001-a2b8-46de-82a9-53143aa00d10'
+person_entity_type = '4aebf73e-95e3-4fd1-95e7-237dcc4a4466'
+
 parser = argparse.ArgumentParser("Entity resolver")
 parser.add_argument('--minimumThreshold', type=float, required=False, default=0.5, help='Ignore matches lower than this threshold')
 args = parser.parse_args()
@@ -19,22 +24,21 @@ df = pd.read_csv(sys.stdin, delimiter=',')
 # Remove duplicate ids
 df.drop_duplicates('networkCanvasAlterID', keep = False, inplace = True)
 df.set_index("networkCanvasAlterID", inplace = True)
+person_nodes = df.loc[df['networkCanvasNodeType'] == person_entity_type];
 
 # time.sleep(10)
 
-name_field = '6be95f85-c2d9-4daf-9de1-3939418af888'
-surname_field = '0ff25001-a2b8-46de-82a9-53143aa00d10'
 
 # Merge dataframe to itself to get pairwise comparisons
 indexer = recordlinkage.Index()
 indexer.full()
-index_list = indexer.index(df)
+index_list = indexer.index(person_nodes)
 comp_pairs = recordlinkage.Compare()
 comp_pairs.string(name_field, name_field, method='jarowinkler',label='fnJwDist')
 comp_pairs.string(surname_field, surname_field, method='jarowinkler',label='lnJwDist')
 comp_pairs.string(name_field, name_field, method='levenshtein',label='fnLevenDist')
 comp_pairs.string(surname_field, surname_field, method='levenshtein',label='lnLevenDist')
-pairwise = comp_pairs.compute(index_list, df)
+pairwise = comp_pairs.compute(index_list, person_nodes)
 
 erAlgorithm = "simple"
 algorithmError = "Please specify an appropriate algorithm"

@@ -10,7 +10,10 @@ args = parser.parse_args()
 lines = []
 
 for line in sys.stdin:
-    lines.append(line)
+  line_parts = line.rstrip().split(",")
+  entity_type = line_parts[1].rstrip()
+  if (entity_type == "4aebf73e-95e3-4fd1-95e7-237dcc4a4466"):
+    lines.append(line_parts)
 
 # spoof slow streamed response
 
@@ -21,19 +24,16 @@ for index, line in enumerate(lines):
     print("networkCanvasAlterID_1, networkCanvasAlterID_2, prob, count", flush=True)
     continue
 
-  line_parts = line.rstrip().split(",")
-
   # For every unique combination:
   for index2, line2 in enumerate(lines):
     if index2 <= index:
       continue
 
-    line_parts2 = line2.rstrip().split(",")
     prob = float(random.random()) # randomly assign pairs a probability
     count += 1
 
     if (args.minimumThreshold and prob > args.minimumThreshold):
-      print(f'{line_parts[0].rstrip()}, {line_parts2[0].rstrip()}, {prob}, {count}', flush=True)
+      print(f'{line[0].rstrip()}, {line2[0].rstrip()}, {prob}, {count}', flush=True)
       # add an artificial delay
       # time.sleep(1)
 
